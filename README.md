@@ -192,7 +192,7 @@ This generates:
 - prototype activation examples
 - Gaussian part-vote labels and vote breakdown metadata
 
-## 11. Package the Report for Download
+## 11. Package the Report for Sharing and Portability
 
 ```bash
 python package_report.py --report-root ./interpretability_report --zip-path ./interpretability_report.zip
