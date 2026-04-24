@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prototype Atlas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <nav class="top-nav">
+    <a href="index.html">Prediction Explorer</a>
+    <a class="active" href="atlas.html">Prototype Atlas</a>
+  </nav>
+
+  <div class="floating-view-toggle" role="group" aria-label="Prototype image display mode">
+    <span>View</span>
+    <button type="button" class="active" data-view-mode="heatmap">Heatmap + Box</button>
+    <button type="button" data-view-mode="original">Original</button>
+    <button type="button" data-view-mode="activation">Activation Grid</button>
+  </div>
+
+  <header class="hero">
+    <div>
+      <p class="eyebrow">Global Prototype Glossary</p>
+      <h1>Prototype Atlas</h1>
+      <p class="lede">
+        A searchable glossary of all learned foreground prototypes. Use this page to inspect what each
+        prototype tends to represent across the dataset.
+      </p>
+    </div>
+    <aside class="status-card" id="run-status">
+      <span class="status-dot"></span>
+      <strong>Waiting for generated data</strong>
+      <p>Expected generated assets in <code>data/</code> and <code>prototypes/</code>.</p>
+    </aside>
+  </header>
+
+  <main>
+    <section class="section controls-section">
+      <div class="section-heading">
+        <p class="eyebrow">Prototype Glossary</p>
+        <h2>Atlas Of Learned Prototypes</h2>
+      </div>
+      <p class="section-copy">
+        Each card shows a learned prototype, its semantic label from part-location voting,
+        its CLIP fallback label, and the dataset images where it activates most strongly.
+      </p>
+      <div class="controls">
+        <input id="search" type="search" placeholder="Search species, prototype id, part label, CLIP label...">
+        <select id="class-filter">
+          <option value="">All classes</option>
+        </select>
+        <select id="label-filter">
+          <option value="">All labels</option>
+        </select>
+      </div>
+      <div class="atlas-scroll">
+        <div class="atlas-grid" id="prototype-grid"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <p class="eyebrow">Labelling Method</p>
+        <h2>How Part-Vote Labels Are Produced</h2>
+      </div>
+      <div class="method-flow">
+        <article>
+          <span class="step-number">1</span>
+          <h3>Scan Owner-Class Images</h3>
+          <p>For each class-owned prototype, compute the prototype's maximum activation and activation center on images from its owner class.</p>
+        </article>
+        <article>
+          <span class="step-number">2</span>
+          <h3>Keep Strong Activations</h3>
+          <p>Use a prototype-specific activation percentile, e.g. top 25%, so weak incidental activations do not dominate the label.</p>
+        </article>
+        <article>
+          <span class="step-number">3</span>
+          <h3>Split Vote By Distance</h3>
+          <p>For each retained image, visible landmarks receive Gaussian proximity weights from the activation center.</p>
+        </article>
+        <article>
+          <span class="step-number">4</span>
+          <h3>Aggregate Weighted Votes</h3>
+          <p>Each part receives <code>activation × normalized Gaussian weight</code>; the largest total vote becomes the prototype label.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <p class="eyebrow">Prototype Detail</p>
+        <h2>When This Prototype Activates</h2>
+      </div>
+      <div id="prototype-detail" class="detail-panel empty">
+        Select a glossary card to inspect that prototype's strongest dataset activations.
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      Static report. <a class="text-link" href="index.html">Return to the Prediction Explorer</a>.
+    </p>
+  </footer>
+
+  <script src="data/report_data.js"></script>
+  <script src="assets/report.js"></script>
+</body>
+</html>

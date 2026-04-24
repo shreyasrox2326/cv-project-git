@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prototype Prediction Explorer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+  <nav class="top-nav">
+    <a class="active" href="index.html">Prediction Explorer</a>
+    <a href="atlas.html">Prototype Atlas</a>
+  </nav>
+
+  <div class="floating-view-toggle" role="group" aria-label="Prototype image display mode">
+    <span>View</span>
+    <button type="button" class="active" data-view-mode="heatmap">Heatmap + Box</button>
+    <button type="button" data-view-mode="original">Original</button>
+    <button type="button" data-view-mode="activation">Activation Grid</button>
+  </div>
+
+  <header class="hero">
+    <div>
+      <p class="eyebrow">CUB-200-2011 / PNP-DINOv2</p>
+      <h1>Prototype Prediction Explorer</h1>
+      <p class="lede">
+        A local interpretability report for the trained non-parametric part-prototype model:
+        pick a test image, inspect the prototypes that shaped the decision, and then use the
+        atlas as a glossary for the learned prototype vocabulary.
+      </p>
+    </div>
+    <aside class="status-card" id="run-status">
+      <span class="status-dot"></span>
+      <strong>Waiting for generated data</strong>
+      <p>Expected generated assets in <code>data/</code>, <code>examples/</code>, and <code>prototypes/</code>.</p>
+    </aside>
+  </header>
+
+  <main>
+    <section class="section explorer-section">
+      <div class="section-heading">
+        <p class="eyebrow">Prediction Explorer</p>
+        <h2>Why This Image Was Classified This Way</h2>
+      </div>
+      <div class="prediction-selector" id="prediction-selector"></div>
+      <div class="inference-walkthrough" id="inference-walkthrough"></div>
+      <div class="class-score-panel">
+        <div class="section-heading compact-heading">
+          <p class="eyebrow">Class Score Audit</p>
+          <h2>Final Weighted Sum By Class</h2>
+        </div>
+        <p class="section-copy">
+          Each class score is computed by summing that class's five prototype contributions:
+          <span class="mono">activation x classifier weight / temperature</span>.
+        </p>
+        <div class="evidence-toolbar">
+          <label>
+            Show Classes
+            <select id="class-score-limit">
+              <option value="5">Top 5</option>
+              <option value="10">Top 10</option>
+              <option value="20">Top 20</option>
+              <option value="all">All scores</option>
+            </select>
+          </label>
+        </div>
+        <div class="score-table-scroll">
+          <table class="score-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Class</th>
+                <th>Weighted Sum</th>
+                <th>Prediction</th>
+              </tr>
+            </thead>
+            <tbody id="class-score-table"></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="selected-prediction" id="selected-prediction"></div>
+      <div class="evidence-toolbar">
+        <label>
+          Evidence
+          <select id="evidence-scope">
+            <option value="predicted">Decision contributors</option>
+            <option value="top_activation">All prototype activations</option>
+          </select>
+        </label>
+        <label>
+          Show
+          <select id="evidence-limit">
+            <option value="5">Top 5</option>
+            <option value="10">Top 10</option>
+            <option value="20">Top 20</option>
+            <option value="all">All available</option>
+          </select>
+        </label>
+      </div>
+      <div class="local-evidence-scroll">
+        <div class="local-evidence" id="local-evidence"></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <p class="eyebrow">Reproduction Summary</p>
+        <h2>Run Configuration And Metrics</h2>
+      </div>
+      <div class="metric-grid" id="summary-grid"></div>
+      <div class="metric-grid metrics-secondary" id="metrics-grid"></div>
+    </section>
+
+    <section class="section">
+      <div class="section-heading">
+        <p class="eyebrow">Prototype Atlas</p>
+        <h2>Global Prototype Glossary</h2>
+      </div>
+      <p class="section-copy">
+        The full searchable atlas is now on a separate page so this page can stay focused on local decisions.
+      </p>
+      <p><a class="text-link" href="atlas.html">Open the Prototype Atlas</a></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>
+      Static report. Open locally after extracting generated assets beside this HTML.
+    </p>
+  </footer>
+
+  <script src="data/report_data.js"></script>
+  <script src="assets/report.js"></script>
+</body>
+</html>
