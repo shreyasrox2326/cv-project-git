@@ -48,6 +48,7 @@ At this point, your directory should look like:
 
 ```text
 ./
+  dinov2/
   proto_non_param/
 ```
 
@@ -67,8 +68,8 @@ Now the structure should be:
 
 ```text
 ./
-  proto_non_param/
   dinov2/
+  proto_non_param/
 ```
 
 ## 4. Create and Install the Python Environment
@@ -115,16 +116,20 @@ After extraction, the workspace should look like:
 
 ```text
 ./
-  proto_non_param/
   dinov2/
   dataset-root/
     CUB_200_2011/
+      attributes/
       images/
+      parts/
+      README
+      bounding_boxes.txt
+      classes.txt
+      image_class_labels.txt
       images.txt
       train_test_split.txt
-      bounding_boxes.txt
-      parts/
     segmentations/
+  proto_non_param/
 ```
 
 The original CUB metadata remains in `CUB_200_2011/`. The cropped images used by training will be generated next.
@@ -140,8 +145,8 @@ python build_cub_bbox_crops.py --dataset-root ./dataset-root --clear
 This creates:
 
 ```text
-./dataset-root/cub200_cropped/train_cropped_augmented/
 ./dataset-root/cub200_cropped/test_cropped/
+./dataset-root/cub200_cropped/train_cropped_augmented/
 ```
 
 To verify the cropped split layout:
@@ -212,18 +217,18 @@ The generated `data/`, `examples/`, and `prototypes/` folders are written direct
 
 ```text
 ./
-  proto_non_param/
   dinov2/
   dataset-root/
     CUB_200_2011/
     cub200_cropped/
     segmentations/
-  log-dir-paper-run/
   build_cub_bbox_crops.py
   check_cub_copy_integrity.py
   generate_interpretability_report.py
-  package_report.py
   interpretability_report/
+  log-dir-paper-run/
+  package_report.py
+  proto_non_param/
 ```
 
 ## Attribution
