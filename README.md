@@ -23,7 +23,19 @@ This bundle contains only the final files that need to be added on top of the up
 
 All commands below assume you are in a project root directory of your choice. Let that directory be `.`.
 
-## 1. Clone the Upstream Repository
+## 1. Bootstrap This Repository Into the Current Directory
+
+If you want this repository's contents to become the contents of your current working directory rather than a nested folder, run:
+
+```bash
+gh repo clone shreyasrox2326/cv-project-git temp
+mv temp/* temp/.git .
+rm -rf temp
+```
+
+After that, continue the rest of the setup from the same project root `.`.
+
+## 2. Clone the Upstream Repository
 
 ```bash
 git clone https://github.com/zijizhu/proto-non-param.git proto_non_param
@@ -39,7 +51,7 @@ At this point, your directory should look like:
   proto_non_param/
 ```
 
-## 2. Clone and Install DINOv2
+## 3. Clone and Install DINOv2
 
 The upstream repository depends on a separate local clone of DINOv2.
 
@@ -59,7 +71,7 @@ Now the structure should be:
   dinov2/
 ```
 
-## 3. Create and Install the Python Environment
+## 4. Create and Install the Python Environment
 
 Install the upstream requirements from `proto_non_param`.
 
@@ -69,7 +81,7 @@ pip install -r requirements.txt
 cd ..
 ```
 
-## 4. Apply the Two Modified Source Files
+## 5. Apply the Two Modified Source Files
 
 Replace the upstream files with the two modified files from this bundle.
 
@@ -85,7 +97,7 @@ Copy-Item ./modified/train.py ./proto_non_param/train.py -Force
 Copy-Item ./modified/backbone.py ./proto_non_param/modeling/backbone.py -Force
 ```
 
-## 5. Download and Extract the Dataset
+## 6. Download and Extract the Dataset
 
 From the project root, run:
 
@@ -117,7 +129,7 @@ After extraction, the workspace should look like:
 
 The original CUB metadata remains in `CUB_200_2011/`. The cropped images used by training will be generated next.
 
-## 6. Build the Cropped Dataset
+## 7. Build the Cropped Dataset
 
 Run:
 
@@ -138,7 +150,7 @@ To verify the cropped split layout:
 python check_cub_copy_integrity.py --dataset-root ./dataset-root
 ```
 
-## 7. Train the Model
+## 8. Train the Model
 
 Run training from inside `proto_non_param`:
 
@@ -150,7 +162,7 @@ cd ..
 
 This is the exact training setup used for our final reproduction run.
 
-## 8. Evaluate the Checkpoint
+## 9. Evaluate the Checkpoint
 
 Run evaluation from inside `proto_non_param`:
 
@@ -160,7 +172,7 @@ python evaluate.py --ckpt-path ../log-dir-paper-run/ckpt.pth
 cd ..
 ```
 
-## 9. Generate Prototype / Interpretability Assets
+## 10. Generate Prototype / Interpretability Assets
 
 Run the final interpretability export from the project root:
 
@@ -175,7 +187,7 @@ This generates:
 - prototype activation examples
 - Gaussian part-vote labels and vote breakdown metadata
 
-## 10. Package the Report for Download
+## 11. Package the Report for Download
 
 ```bash
 python package_report.py --report-root ./interpretability_report --zip-path ./interpretability_report.zip
