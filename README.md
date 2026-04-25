@@ -74,15 +74,9 @@ Now the structure should be:
   proto_non_param/
 ```
 
-## 4. Create and Install the Python Environment
+## 4. Create the Python Environment
 
-Install the upstream requirements from `proto_non_param`.
-
-```bash
-cd proto_non_param
-pip install -r requirements.txt
-cd ..
-```
+Create and activate your Python environment first. Do not install the upstream `requirements.txt` yet, because this bundle replaces it with the corrected working version in the next step.
 
 ## 5. Apply the Modified Project Files
 
@@ -102,7 +96,17 @@ Copy-Item ./modified/train.py ./proto_non_param/train.py -Force
 Copy-Item ./modified/backbone.py ./proto_non_param/modeling/backbone.py -Force
 ```
 
-## 6. Download and Extract the Dataset
+## 6. Install the Project Requirements
+
+Now install the patched `requirements.txt` from inside `proto_non_param`:
+
+```bash
+cd proto_non_param
+pip install -r requirements.txt
+cd ..
+```
+
+## 7. Download and Extract the Dataset
 
 From the project root, run:
 
@@ -138,7 +142,7 @@ After extraction, the workspace should look like:
 
 The original CUB metadata remains in `CUB_200_2011/`. The cropped images used by training will be generated next.
 
-## 7. Build the Cropped Dataset
+## 8. Build the Cropped Dataset
 
 Run:
 
@@ -159,7 +163,7 @@ To verify the cropped split layout:
 python check_cub_copy_integrity.py --dataset-root ./dataset-root
 ```
 
-## 8. Train the Model
+## 9. Train the Model
 
 Run training from inside `proto_non_param`:
 
@@ -171,7 +175,7 @@ cd ..
 
 This is the exact training setup used for our final reproduction run.
 
-## 9. Evaluate the Checkpoint
+## 10. Evaluate the Checkpoint
 
 Run evaluation from inside `proto_non_param`:
 
@@ -181,7 +185,7 @@ python evaluate.py --ckpt-path ../log-dir-paper-run/ckpt.pth
 cd ..
 ```
 
-## 10. Generate Prototype / Interpretability Assets
+## 11. Generate Prototype / Interpretability Assets
 
 Run the final interpretability export from the project root:
 
@@ -196,7 +200,7 @@ This generates:
 - prototype activation examples
 - Gaussian part-vote labels and vote breakdown metadata
 
-## 11. Package the Report for Sharing and Portability
+## 12. Package the Report for Sharing and Portability
 
 ```bash
 python package_report.py --report-root ./interpretability_report --zip-path ./interpretability_report.zip
