@@ -30,7 +30,7 @@ All commands below assume you are in a project root directory of your choice. Le
 If you want this repository's contents to become the contents of your current working directory rather than a nested folder, run:
 
 ```bash
-gh repo clone shreyasrox2326/cv-project-git temp
+git clone https://github.com/shreyasrox2326/cv-project-git.git temp
 mv temp/* temp/.git .
 rm -rf temp
 ```
@@ -62,7 +62,6 @@ The upstream repository depends on a separate local clone of DINOv2.
 git clone https://github.com/facebookresearch/dinov2.git dinov2
 cd dinov2
 git checkout e1277af2ba9496fbadf7aec6eba56e8d882d1e35
-pip install --no-deps -e .
 cd ..
 ```
 
@@ -77,6 +76,14 @@ Now the structure should be:
 ## 4. Create the Python Environment
 
 Create and activate your Python environment first. Do not install the upstream `requirements.txt` yet, because this bundle replaces it with the corrected working version in the next step.
+
+After activation, install the local DINOv2 clone from the project root:
+
+```bash
+cd dinov2
+pip install --no-deps -e .
+cd ..
+```
 
 ## 5. Apply the Modified Project Files
 
@@ -218,6 +225,7 @@ The generated `data/`, `examples/`, and `prototypes/` folders are written direct
 
 - `requirements.txt`
   - fixes the `albumentations` version pin to the working form `albumentations==1.4.14`
+  - uses the pip-installable OpenCV package name `opencv-python`
 - `train.py`
   - fixes best-checkpoint tracking so the best epoch and best accuracy are updated correctly
 - `backbone.py`

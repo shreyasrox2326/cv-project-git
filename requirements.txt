@@ -2,7 +2,7 @@ torch~=2.3.1
 torchvision
 torchaudio
 torchmetrics
-opencv
+opencv-python
 matplotlib
 einops
 scipy
