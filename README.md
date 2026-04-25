@@ -27,19 +27,14 @@ This bundle contains only the final files that need to be added on top of the up
 
 ## Expected Working Directory
 
-All commands below assume you are in a project root directory of your choice. Let that directory be `.`.
+All commands below assume `.` is the root of this repository.
 
-## 1. Bootstrap This Repository Into the Current Directory
-
-If you want this repository's contents to become the contents of your current working directory rather than a nested folder, run:
+## 1. Clone This Repository
 
 ```bash
-git clone https://github.com/shreyasrox2326/cv-project-git.git temp
-mv temp/* temp/.git .
-rm -rf temp
+git clone https://github.com/shreyasrox2326/cv-project-git.git
+cd cv-project-git
 ```
-
-After that, continue the rest of the setup from the same project root `.`.
 
 ## 2. Clone the Upstream Repository
 
@@ -54,8 +49,14 @@ At this point, your directory should look like:
 
 ```text
 ./
-  dinov2/
+  build_cub_bbox_crops.py
+  check_cub_copy_integrity.py
+  generate_interpretability_report.py
+  interpretability_report/
+  modified/
+  package_report.py
   proto_non_param/
+  requirements.txt
 ```
 
 ## 3. Clone and Install DINOv2
@@ -73,8 +74,15 @@ Now the structure should be:
 
 ```text
 ./
+  build_cub_bbox_crops.py
+  check_cub_copy_integrity.py
   dinov2/
+  generate_interpretability_report.py
+  interpretability_report/
+  modified/
+  package_report.py
   proto_non_param/
+  requirements.txt
 ```
 
 ## 4. Create the Python Environment
@@ -139,6 +147,8 @@ After extraction, the workspace should look like:
 
 ```text
 ./
+  build_cub_bbox_crops.py
+  check_cub_copy_integrity.py
   dinov2/
   dataset-root/
     CUB_200_2011/
@@ -152,7 +162,12 @@ After extraction, the workspace should look like:
       images.txt
       train_test_split.txt
     segmentations/
+  generate_interpretability_report.py
+  interpretability_report/
+  modified/
+  package_report.py
   proto_non_param/
+  requirements.txt
 ```
 
 The original CUB metadata remains in `CUB_200_2011/`. The cropped images used by training will be generated next.
