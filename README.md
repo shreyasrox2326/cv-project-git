@@ -4,6 +4,8 @@ This bundle contains only the final files that need to be added on top of the up
 
 ## Bundle Contents
 
+- `requirements.txt`
+  - Replacement for `./proto_non_param/requirements.txt`
 - `modified/train.py`
   - Replacement for `./proto_non_param/train.py`
 - `modified/backbone.py`
@@ -82,11 +84,12 @@ pip install -r requirements.txt
 cd ..
 ```
 
-## 5. Apply the Two Modified Source Files
+## 5. Apply the Modified Project Files
 
-Replace the upstream files with the two modified files from this bundle.
+Replace the upstream files with the modified files from this bundle.
 
 ```bash
+cp requirements.txt ./proto_non_param/requirements.txt
 cp modified/train.py ./proto_non_param/train.py
 cp modified/backbone.py ./proto_non_param/modeling/backbone.py
 ```
@@ -94,6 +97,7 @@ cp modified/backbone.py ./proto_non_param/modeling/backbone.py
 On Windows PowerShell, the equivalent is:
 
 ```powershell
+Copy-Item ./requirements.txt ./proto_non_param/requirements.txt -Force
 Copy-Item ./modified/train.py ./proto_non_param/train.py -Force
 Copy-Item ./modified/backbone.py ./proto_non_param/modeling/backbone.py -Force
 ```
@@ -206,8 +210,10 @@ This produces:
 
 The generated `data/`, `examples/`, and `prototypes/` folders are written directly into `./interpretability_report/`, alongside `index.html`, `atlas.html`, and `assets/`.
 
-## Why These Two `proto_non_param` Files Were Replaced
+## Why These `proto_non_param` Files Were Replaced
 
+- `requirements.txt`
+  - fixes the `albumentations` version pin to the working form `albumentations==1.4.14`
 - `train.py`
   - fixes best-checkpoint tracking so the best epoch and best accuracy are updated correctly
 - `backbone.py`
