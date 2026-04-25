@@ -11,6 +11,22 @@ const fmt = (value) => {
 const byId = (id) => document.getElementById(id);
 const hasId = (id) => Boolean(byId(id));
 
+function assetPath(value) {
+  if (!value) return "";
+  const raw = String(value).replace(/\\/g, "/");
+  if (/^(https?:|file:|data:|blob:)/i.test(raw)) return raw;
+
+  // Keep the report portable after zip extraction. If a future export stores
+  // an absolute server/Windows path, trim it back to the report-local folder.
+  const roots = ["examples/", "prototypes/", "assets/", "data/"];
+  for (const root of roots) {
+    const index = raw.indexOf(root);
+    if (index >= 0) return raw.slice(index);
+  }
+
+  return raw.replace(/^\.?\//, "");
+}
+
 const escapeHtml = (value) => String(value ?? "")
   .replace(/&/g, "&amp;")
   .replace(/</g, "&lt;")
@@ -65,7 +81,11 @@ function partVoteEvidence(p) {
 }
 
 function pieGradient(rows) {
-  const palette = ["#111111", "#555555", "#888888", "#b5b5b5", "#d4d4d4", "#efefef"];
+  const palette = [
+    "#0f172a", "#2563eb", "#16a34a", "#f59e0b", "#dc2626",
+    "#7c3aed", "#0891b2", "#84cc16", "#f97316", "#be123c",
+    "#475569", "#0d9488", "#a16207", "#9333ea", "#4b5563",
+  ];
   const total = rows.reduce((sum, row) => sum + Math.max(0, row.weighted), 0) || 1;
   let cursor = 0;
   const parts = rows.map((row, idx) => {
@@ -95,7 +115,11 @@ function renderVoteBreakdown(p) {
         <div class="vote-pie" style="background:${escapeHtml(pieGradient(rows))}" role="img" aria-label="Weighted part vote pie chart"></div>
         <div class="vote-legend">
           ${rows.map((row, idx) => `<div class="vote-legend-row">
-            <span class="legend-swatch swatch-${idx % 6}"></span>
+            <span class="legend-swatch" style="background:${escapeHtml([
+              "#0f172a", "#2563eb", "#16a34a", "#f59e0b", "#dc2626",
+              "#7c3aed", "#0891b2", "#84cc16", "#f97316", "#be123c",
+              "#475569", "#0d9488", "#a16207", "#9333ea", "#4b5563",
+            ][idx % 15])}"></span>
             <strong>${escapeHtml(row.label)}</strong>
             <span class="mono">${escapeHtml(fmt(row.weighted))}</span>
             <span>${escapeHtml(pct(row.weighted / total))}</span>
@@ -108,7 +132,15 @@ function renderVoteBreakdown(p) {
 }
 
 function renderVoteEvidence(p) {
-  const rows = partVoteEvidence(p).slice(0, 8);
+  const evidence = partVoteEvidence(p);
+  const examples = p.examples || [];
+  const rows = examples.slice(0, 5).map((ex, idx) => ({
+    ...(evidence[idx] || {}),
+    ...ex,
+    activation_score: evidence[idx]?.activation_score ?? ex.activation_score,
+    part_votes: evidence[idx]?.part_votes || evidence[idx]?.gaussian_votes || [],
+    matched_parts: evidence[idx]?.matched_parts || [],
+  }));
   if (!rows.length) return "";
   return `
     <section class="vote-evidence-section">
@@ -116,10 +148,10 @@ function renderVoteEvidence(p) {
         <p class="eyebrow">Voting Evidence</p>
         <h3>How Individual Activations Vote</h3>
       </div>
-      <p class="small">Each retained activation has a vote budget scaled by its activation score. The vote is split across visible part landmarks by normalized Gaussian proximity to the activation center.</p>
+      <p class="small">These are the same saved top-5 atlas images for this prototype, annotated with Gaussian part-vote rows where exported. Each retained activation has a vote budget scaled by its activation score and split across visible landmarks by normalized Gaussian proximity.</p>
       <div class="vote-evidence-grid">
         ${rows.map((ev, idx) => {
-          const partRows = ev.part_votes || ev.gaussian_votes || (ev.matched_parts || []).map((label) => ({ label, share: null, weight: null }));
+          const partRows = (ev.part_votes || ev.gaussian_votes || []).slice(0, 8);
           return `<article class="vote-evidence-card">
             ${imageFrame(ev, `${p.prototype_id} vote example ${idx + 1}`)}
             <div class="vote-evidence-body">
@@ -132,9 +164,9 @@ function renderVoteEvidence(p) {
                   ${partRows.map((row) => `<tr>
                     <td>${escapeHtml(row.label || row.part || "n/a")}</td>
                     <td class="mono">${escapeHtml(fmt(row.distance ?? row.d))}</td>
-                    <td class="mono">${escapeHtml(fmt(row.gaussian ?? row.proximity ?? row.r))}</td>
+                    <td class="mono">${escapeHtml(fmt(row.normalized_gaussian ?? row.gaussian ?? row.proximity ?? row.r))}</td>
                     <td class="mono">${escapeHtml(fmt(row.weight ?? row.vote ?? row.weighted_vote ?? row.share))}</td>
-                  </tr>`).join("") || `<tr><td colspan="4">No per-part vote rows exported.</td></tr>`}
+                  </tr>`).join("") || `<tr><td colspan="4">${escapeHtml((ev.matched_parts || []).join(", ") || "No per-part vote rows exported.")}</td></tr>`}
                 </tbody>
               </table>
             </div>
@@ -146,18 +178,21 @@ function renderVoteEvidence(p) {
 }
 
 function imageFor(item) {
+  if (visualMode === "crop") return item.crop || item.original || item.image || item.overlay || "";
   if (visualMode === "original") return item.original || item.image || item.crop || item.overlay || "";
   if (visualMode === "activation") return item.activation || item.overlay || item.original || item.image || "";
   return item.overlay || item.image || item.original || "";
 }
 
 function prototypeThumbnail(p) {
+  if (visualMode === "crop") return p.thumbnail_crop || p.examples?.[0]?.crop || p.examples?.[0]?.original || "";
   if (visualMode === "original") return p.thumbnail_original || p.examples?.[0]?.original || "";
   if (visualMode === "activation") return p.thumbnail_activation || p.examples?.[0]?.activation || "";
   return p.thumbnail_overlay || p.thumbnail || p.examples?.[0]?.overlay || "";
 }
 
 function imageModeLabel() {
+  if (visualMode === "crop") return "crop";
   if (visualMode === "original") return "original";
   if (visualMode === "activation") return "activation grid";
   return "heatmap + box";
@@ -167,7 +202,7 @@ function imageFrame(item, alt = "") {
   const img = imageFor(item);
   if (!img) return `<div class="image-missing">visual not saved</div>`;
   const crisp = visualMode === "activation" ? " activation-frame" : "";
-  return `<div class="image-frame${crisp}"><img src="${escapeHtml(img)}" alt="${escapeHtml(alt)}"><span class="image-mode-note">${escapeHtml(imageModeLabel())}</span></div>`;
+  return `<div class="image-frame${crisp}"><img src="${escapeHtml(assetPath(img))}" alt="${escapeHtml(alt)}"><span class="image-mode-note">${escapeHtml(imageModeLabel())}</span></div>`;
 }
 
 function card(label, value, note = "") {
@@ -227,7 +262,7 @@ function renderPredictionSelector(predictions) {
   const items = predictions || [];
   byId("prediction-selector").innerHTML = items.map((p, idx) => `
     <button type="button" class="prediction-pick ${idx === selectedPredictionIndex ? "active" : ""}" data-prediction-index="${idx}">
-      <img src="${escapeHtml(p.image || "")}" alt="${escapeHtml(p.true_class || "prediction")}">
+      <img src="${escapeHtml(assetPath(p.image || ""))}" alt="${escapeHtml(p.true_class || "prediction")}">
       <span>${escapeHtml(p.true_class || "example")}</span>
       <strong>${escapeHtml(p.predicted_class || "n/a")}</strong>
     </button>
@@ -456,7 +491,7 @@ function renderPrototypes(prototypes) {
   }).join("");
 
   document.querySelectorAll(".prototype-card").forEach((el) => {
-    el.addEventListener("click", () => showPrototype(el.dataset.prototype));
+    el.addEventListener("click", () => openPrototype(el.dataset.prototype, true));
   });
 }
 
@@ -466,16 +501,6 @@ function showPrototype(id) {
   const p = lookup.get(id);
   if (!p) return;
   const mainLabel = p.primary_label || p.annotation_label || p.clip_label || "unlabeled";
-  const examples = (p.examples || []).map((ex, idx) => `<article class="example-card">
-    ${imageFrame(ex, `${p.prototype_id} example ${idx + 1}`)}
-    <div>
-      <strong>Top ${idx + 1}</strong>
-      <p class="small path mono">${escapeHtml(ex.image_path || "")}</p>
-      <p class="small">activation ${escapeHtml(fmt(ex.activation_score))}</p>
-      ${ex.crop ? `<a href="${escapeHtml(ex.crop)}">activation crop</a>` : ""}
-    </div>
-  </article>`).join("");
-
   byId("prototype-detail").classList.remove("empty");
   byId("prototype-detail").innerHTML = `
     <p class="eyebrow">${escapeHtml(p.class_name)}</p>
@@ -490,13 +515,14 @@ function showPrototype(id) {
     </div>
     ${renderVoteBreakdown(p)}
     ${renderVoteEvidence(p)}
-    <div class="section-heading compact-heading">
-      <p class="eyebrow">Top Activations</p>
-      <h3>Saved Prototype Atlas Images</h3>
-    </div>
-    <div class="example-grid">${examples}</div>
   `;
-  byId("prototype-detail").scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function openPrototype(id, shouldScroll = true) {
+  showPrototype(id);
+  if (shouldScroll && hasId("prototype-detail")) {
+    byId("prototype-detail").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
 }
 
 if (!report) {
@@ -514,12 +540,15 @@ if (!report) {
   });
   document.querySelectorAll("[data-view-mode]").forEach((button) => {
     button.addEventListener("click", () => {
+      const scrollX = window.scrollX;
+      const scrollY = window.scrollY;
       visualMode = button.dataset.viewMode || "heatmap";
       document.querySelectorAll("[data-view-mode]").forEach((item) => item.classList.toggle("active", item === button));
       const openId = document.querySelector("#prototype-detail .prototype-id")?.textContent;
       renderPredictionExplorer();
       renderPrototypes(report.prototypes || []);
-      if (openId) showPrototype(openId);
+      if (openId) openPrototype(openId, false);
+      requestAnimationFrame(() => window.scrollTo(scrollX, scrollY));
     });
   });
 }
