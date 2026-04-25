@@ -29,11 +29,12 @@ This bundle contains only the final files that need to be added on top of the up
 
 All commands below assume `.` is the root of this repository.
 
-## 1. Clone This Repository
+## 1. Bootstrap This Repository Into the Current Directory
 
 ```bash
-git clone https://github.com/shreyasrox2326/cv-project-git.git
-cd cv-project-git
+git clone https://github.com/shreyasrox2326/cv-project-git.git temp
+mv temp/* temp/.git .
+rm -rf temp
 ```
 
 ## 2. Clone the Upstream Repository
