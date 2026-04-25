@@ -10,6 +10,10 @@ This bundle contains only the final files that need to be added on top of the up
   - Replacement for `./proto_non_param/train.py`
 - `modified/backbone.py`
   - Replacement for `./proto_non_param/modeling/backbone.py`
+- `modified/evaluate.py`
+  - Replacement for `./proto_non_param/evaluate.py`
+- `modified/eval/utils.py`
+  - Replacement for `./proto_non_param/eval/utils.py`
 - `build_cub_bbox_crops.py`
   - Final bounding-box cropping script used to create `cub200_cropped/`
 - `check_cub_copy_integrity.py`
@@ -93,6 +97,8 @@ Replace the upstream files with the modified files from this bundle.
 cp requirements.txt ./proto_non_param/requirements.txt
 cp modified/train.py ./proto_non_param/train.py
 cp modified/backbone.py ./proto_non_param/modeling/backbone.py
+cp modified/evaluate.py ./proto_non_param/evaluate.py
+cp modified/eval/utils.py ./proto_non_param/eval/utils.py
 ```
 
 On Windows PowerShell, the equivalent is:
@@ -101,6 +107,8 @@ On Windows PowerShell, the equivalent is:
 Copy-Item ./requirements.txt ./proto_non_param/requirements.txt -Force
 Copy-Item ./modified/train.py ./proto_non_param/train.py -Force
 Copy-Item ./modified/backbone.py ./proto_non_param/modeling/backbone.py -Force
+Copy-Item ./modified/evaluate.py ./proto_non_param/evaluate.py -Force
+Copy-Item ./modified/eval/utils.py ./proto_non_param/eval/utils.py -Force
 ```
 
 ## 6. Install the Project Requirements
@@ -230,6 +238,10 @@ The generated `data/`, `examples/`, and `prototypes/` folders are written direct
   - fixes best-checkpoint tracking so the best epoch and best accuracy are updated correctly
 - `backbone.py`
   - skips the expensive default DINOv2 weight initialization before loading the expanded-state checkpoint
+- `evaluate.py`
+  - exports the actual dataset root into the evaluation helpers before importing them
+- `eval/utils.py`
+  - replaces the hardcoded `datasets/CUB_200_2011` metadata path with an environment-configurable path
 
 ## Final Directory Layout After Full Setup
 
